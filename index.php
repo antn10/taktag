@@ -225,6 +225,33 @@ $conn->close();
 });
 
             });
+
+
+               function editarProducto(id) {
+      // Simulación de carga de datos del producto
+      var nombreProducto = "Producto " + id;
+      var cantidadProducto = 1;
+      // Llenar el formulario con los datos del producto
+      document.getElementById('enviarA').value = nombreProducto;
+      document.getElementById('editCantidad').value = cantidadProducto;
+      // Mostrar el modal
+      $('#editModal').modal('show');
+    }
+
+    function guardarEdicion() {
+      // Aquí puedes obtener los valores del formulario y realizar las acciones necesarias
+      var nombreProducto = document.getElementById('enviarA').value;
+      var cantidadProducto = document.getElementById('editCantidad').value;
+
+      // Simplemente alertamos los valores para este ejemplo
+      //alert("Producto editado:\nNombre: " + nombreProducto + "\nCantidad: " + cantidadProducto);
+
+      // Aquí podrías enviar los datos del formulario a tu backend mediante una petición AJAX
+      // Y actualizar la tabla o realizar otras acciones según sea necesario
+
+      // Cerrar el modal
+      $('#editModal').modal('hide');
+    }
         </script>
 </body>
 
