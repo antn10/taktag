@@ -130,7 +130,7 @@ $conn->close();
             });
 
 
-            function editarProducto(id) {
+               function editarProducto(id) {
       // Simulación de carga de datos del producto
       var nombreProducto = "Producto " + id;
       var cantidadProducto = 1;
