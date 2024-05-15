@@ -23,6 +23,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,6 +31,7 @@ $conn->close();
     <!-- Agrega el enlace al CSS de Bootswatch -->
     <link rel="stylesheet" href="bootstrap.min.css">
 </head>
+
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">Inventario</h1>
@@ -49,7 +51,7 @@ $conn->close();
             </form>
         </div>
         <div id="login-success" style="display: none;">
-        <button id="logoutButton" class="btn btn-danger">Cerrar sesión</button>
+            <button id="logoutButton" class="btn btn-danger">Cerrar sesión</button>
             <p class="text-success">Inventario general</p>
             <div class="input-group mb-3">
                 <select id="inventorySelect" class="form-select">
@@ -82,7 +84,32 @@ $conn->close();
                         <!-- Product rows will be inserted here dynamically -->
                     </tbody>
                 </table>
-                <button class="btn btn-primary">Nuevo Producto</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoModal">
+                    +
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="nuevoModal" tabindex="-1" role="dialog" aria-labelledby="nuevoModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="nuevoModalLabel">añadir nuevo producto</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input></input>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary">Confirmar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <?php
                 include 'editproducto.php';
                 ?>
@@ -94,81 +121,111 @@ $conn->close();
         <!-- Script de JavaScript para el manejo del formulario de login -->
         <script>
             $(document).ready(function () {
-    // Check if the user is already logged in
-    $.ajax({
-        type: "POST",
-        url: "login.php", // Replace with your PHP script to check login status
-        success: function (response) {
-            if (response === "success") {
-                // If the user is logged in, hide the login form and show the inventory
-                $("#login-form").hide();
-                $("#login-success").show();
-
-                // Fetch products for 'all' inventory
-                fetchProducts('all');
-            }
-        }
-    });
-
-    // Handle form submission
-    $("#loginForm").submit(function (event) {
-        event.preventDefault();
-        var formData = $(this).serialize();
-        $.ajax({
-            type: "POST",
-            url: "login.php",
-            data: formData,
-            success: function (response) {
-                if (response === "success") {
-                    // If login is successful, hide the login form and show the inventory
-                    $("#login-form").hide();
-                    $("#login-success").show();
-
-                    // Store the username in local storage
-                    localStorage.setItem('username', $("#username").val());
-
-                    // Fetch products for 'all' inventory
-                    fetchProducts('all');
-                } else {
-                    alert("Inicio de sesión fallido. Verifica tu usuario y contraseña.");
-                }
-            }
-        });
-    });
-    $("#logoutButton").click(function () {
-                // Perform logout operation
+                // Check if the user is already logged in
                 $.ajax({
                     type: "POST",
-                    url: "logout.php", // Replace with your PHP script to handle logout
+                    url: "login.php", // Replace with your PHP script to check login status
                     success: function (response) {
                         if (response === "success") {
-                            // If logout is successful, reload the page to show the login form
-                            location.reload();
-                        } else {
-                            alert("Error al cerrar sesión.");
+                            // If the user is logged in, hide the login form and show the inventory
+                            $("#login-form").hide();
+                            $("#login-success").show();
+
+                            // Fetch products for 'all' inventory
+                            fetchProducts('all');
                         }
                     }
                 });
-            });
 
-    // Handle inventory selection change
-    $("#inventorySelect").change(function () {
-        var selectedInventory = $(this).val();
-        fetchProducts(selectedInventory);
-    });
+                // Handle form submission
+                $("#loginForm").submit(function (event) {
+                    event.preventDefault();
+                    var formData = $(this).serialize();
+                    $.ajax({
+                        type: "POST",
+                        url: "login.php",
+                        data: formData,
+                        success: function (response) {
+                            if (response === "success") {
+                                // If login is successful, hide the login form and show the inventory
+                                $("#login-form").hide();
+                                $("#login-success").show();
 
-    // Function to fetch products
-    function fetchProducts(inventoryId) {
+                                // Store the username in local storage
+                                localStorage.setItem('username', $("#username").val());
+
+                                // Fetch products for 'all' inventory
+                                fetchProducts('all');
+                            } else {
+                                alert("Inicio de sesión fallido. Verifica tu usuario y contraseña.");
+                            }
+                        }
+                    });
+                });
+                $("#logoutButton").click(function () {
+                    // Perform logout operation
+                    $.ajax({
+                        type: "POST",
+                        url: "logout.php", // Replace with your PHP script to handle logout
+                        success: function (response) {
+                            if (response === "success") {
+                                // If logout is successful, reload the page to show the login form
+                                location.reload();
+                            } else {
+                                alert("Error al cerrar sesión.");
+                            }
+                        }
+                    });
+                });
+
+                // Handle inventory selection change
+                $("#inventorySelect").change(function () {
+                    var selectedInventory = $(this).val();
+                    fetchProducts(selectedInventory);
+                });
+
+                // Function to fetch products
+                function fetchProducts(inventoryId) {
+                    $.ajax({
+                        type: "POST",
+                        url: "fetch_products.php", // Replace with your PHP script to fetch products
+                        data: { inventory_id: inventoryId },
+                        success: function (response) {
+                            $("#productBody").html(response);
+                        }
+                    });
+                }
+                $("#nuevoModal").on("show.bs.modal", function (event) {
+                    var modal = $(this);
+                    modal.find(".modal-body input").val(""); // Clear the input field on modal open
+                });
+
+                $("#nuevoModal").on("click", ".btn-primary", function () {
+    var productName = $("#nuevoModal").find(".modal-body input").val().trim();
+    if (productName !== "") {
+        // Check if product name already exists
         $.ajax({
             type: "POST",
-            url: "fetch_products.php", // Replace with your PHP script to fetch products
-            data: { inventory_id: inventoryId },
+            url: "add_producto.php", // PHP script to handle both checking for duplicates and adding a product
+            data: { productName: productName },
             success: function (response) {
-                $("#productBody").html(response);
+                if (response === "exists") {
+                } else if (response === "success") {
+                    // Product added successfully, close modal and update inventory
+                    $("#nuevoModal").modal("hide");
+                    fetchProducts('all');
+                } else {
+                }
+                alert(response);
             }
         });
+    } else {
+        alert("Ingresa un nombre de producto válido.");
     }
 });
+
+            });
         </script>
-    </body>
-    </html>
+</body>
+
+</html>
