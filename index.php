@@ -49,6 +49,7 @@ $conn->close();
             </form>
         </div>
         <div id="login-success" style="display: none;">
+        <button id="logoutButton" class="btn btn-danger">Cerrar sesión</button>
             <p class="text-success">Inventario general</p>
             <div class="input-group mb-3">
                 <select id="inventorySelect" class="form-select">
@@ -93,41 +94,81 @@ $conn->close();
         <!-- Script de JavaScript para el manejo del formulario de login -->
         <script>
             $(document).ready(function () {
-                $("#loginForm").submit(function (event) {
-                    event.preventDefault();
-                    var formData = $(this).serialize();
-                    $.ajax({
-                        type: "POST",
-                        url: "login.php", // Cambia esto a tu archivo PHP de login
-                        data: formData,
-                        success: function (response) {
-                            if (response === "success") {
-                                $("#login-form").hide();
-                                $("#login-success").show();
-                            } else {
-                                //alert("Inicio de sesión fallido. Verifica tu usuario y contraseña.");
-                            }
-                        }
-                    });
-                });
+    // Check if the user is already logged in
+    $.ajax({
+        type: "POST",
+        url: "login.php", // Replace with your PHP script to check login status
+        success: function (response) {
+            if (response === "success") {
+                // If the user is logged in, hide the login form and show the inventory
+                $("#login-form").hide();
+                $("#login-success").show();
 
-                $("#inventorySelect").change(function () {
-                    var selectedInventory = $(this).val();
-                    fetchProducts(selectedInventory);
-                });
+                // Fetch products for 'all' inventory
+                fetchProducts('all');
+            }
+        }
+    });
 
-                function fetchProducts(inventoryId) {
-                    $.ajax({
-                        type: "POST",
-                        url: "fetch_products.php", // Replace with your PHP script to fetch products
-                        data: { inventory_id: inventoryId },
-                        success: function (response) {
-                            $("#productBody").html(response);
-                        }
-                    });
+    // Handle form submission
+    $("#loginForm").submit(function (event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+        $.ajax({
+            type: "POST",
+            url: "login.php",
+            data: formData,
+            success: function (response) {
+                if (response === "success") {
+                    // If login is successful, hide the login form and show the inventory
+                    $("#login-form").hide();
+                    $("#login-success").show();
+
+                    // Store the username in local storage
+                    localStorage.setItem('username', $("#username").val());
+
+                    // Fetch products for 'all' inventory
+                    fetchProducts('all');
+                } else {
+                    alert("Inicio de sesión fallido. Verifica tu usuario y contraseña.");
                 }
-                fetchProducts('all')
+            }
+        });
+    });
+    $("#logoutButton").click(function () {
+                // Perform logout operation
+                $.ajax({
+                    type: "POST",
+                    url: "logout.php", // Replace with your PHP script to handle logout
+                    success: function (response) {
+                        if (response === "success") {
+                            // If logout is successful, reload the page to show the login form
+                            location.reload();
+                        } else {
+                            alert("Error al cerrar sesión.");
+                        }
+                    }
+                });
             });
+
+    // Handle inventory selection change
+    $("#inventorySelect").change(function () {
+        var selectedInventory = $(this).val();
+        fetchProducts(selectedInventory);
+    });
+
+    // Function to fetch products
+    function fetchProducts(inventoryId) {
+        $.ajax({
+            type: "POST",
+            url: "fetch_products.php", // Replace with your PHP script to fetch products
+            data: { inventory_id: inventoryId },
+            success: function (response) {
+                $("#productBody").html(response);
+            }
+        });
+    }
+});
         </script>
     </body>
     </html>
