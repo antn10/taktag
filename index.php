@@ -126,6 +126,7 @@ $conn->close();
                         }
                     });
                 }
+                fetchProducts('all')
             });
         </script>
     </body>
