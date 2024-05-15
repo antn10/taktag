@@ -4,7 +4,7 @@ ini_set('display_errors', 1);  // Muestra los errores en la página
 
 // Verifica si se ha enviado el formulario
     // Conexión a la base de datos (cambia estos valores según tu configuración)
-    $servername = "localhost";
+    $servername = "192.168.0.20";
     $username = "taktag";
     $password = "taktag";
     $dbname = "taktag";

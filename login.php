@@ -5,7 +5,7 @@ ini_set('display_errors', 1);  // Muestra los errores en la página
 // Verifica si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Conexión a la base de datos (cambia estos valores según tu configuración)
-    $servername = "localhost"; // 192.168.0.20
+    $servername = "192.168.0.20"; // 192.168.0.20
     $username = "taktag";
     $password = "taktag";
     $dbname = "taktag";
