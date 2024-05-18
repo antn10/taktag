@@ -2,10 +2,18 @@
 error_reporting(E_ALL);  // Muestra todos los errores
 ini_set('display_errors', 1);  // Muestra los errores en la página
 
+session_start(); // Inicia la sesión o reanuda la sesión existente
+
+// Verifica si ya hay una sesión activa (el usuario está ya logueado)
+if (isset($_SESSION['username'])) {
+    echo "success"; // El usuario ya está logueado
+    exit; // Termina el script para evitar procesamiento adicional
+}
+
 // Verifica si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Conexión a la base de datos (cambia estos valores según tu configuración)
-    $servername = "192.168.0.20"; // 192.168.0.20
+    $servername = "192.168.0.20";
     $username = "taktag";
     $password = "taktag";
     $dbname = "taktag";
@@ -29,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verifica si se encontró un usuario con esa combinación
     if ($result->num_rows == 1) {
         // Inicio de sesión exitoso
+        $_SESSION['username'] = $username; // Guarda el nombre de usuario en la sesión
         echo "success";
     } else {
         // Inicio de sesión fallido
