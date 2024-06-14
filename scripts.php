@@ -1,6 +1,9 @@
 <script src="lib/jquery.js"></script>
 <script src="lib/popper.min.js"></script>
 <script src="lib/bootstrap.min.js"></script>   
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 <script>
     // Handle inventory selection change
     $("#inventorySelect").change(function () {
@@ -8,69 +11,70 @@
         fetchProducts(selectedInventory);
     });
 
-    // Function to fetch products
-    function fetchProducts(inventoryId) {
-        $.ajax({
-            type: "POST",
-            url: "actions/fetch_products.php", // Replace with your PHP script to fetch products
-            data: { inventory_id: inventoryId },
-            success: function (response) {
-                $("#productBody").html(response);
-            }
-        });
-    }
-    $("#nuevoModal").on("show.bs.modal", function (event) {
+    $("#modalAdd").on("show.bs.modal", function (event) {
         var modal = $(this);
         modal.find(".modal-body input").val(""); // Clear the input field on modal open
     });
 
-    $("#nuevoModal").on("click", ".btn-primary", function () {
-    var productName = $("#nuevoModal").find(".modal-body input").val().trim();
+
+    $("#modalAdd").on("click", ".btn-primary", function () {
+    var productName  = document.getElementById('editNombre').value;
+    var productDesc  = document.getElementById('editDesc').value;
+    var productSerie = document.getElementById('editSerie').value;
+    var productMarca = document.getElementById('editMarca').value;
+    var productModelo= document.getElementById('editModelo').value;
+    var productClase = document.getElementById('editClase').value;
+    var cant         = document.getElementById('editCant').value;
+    var ingresarEn   = document.getElementById('ingresarEn').value;
+    
     if (productName !== "") {
-        // Check if product name already exists
         $.ajax({
             type: "POST",
-            url: "actions/check_product.php", // PHP script to handle both checking for duplicates and adding a product
-            data: { productName: productName },
+            url: "acc_add_producto.php", // PHP script to handle both checking for duplicates and adding a product
+            data: { productName: productName,productDesc: productDesc,productSerie: productSerie, productMarca: productMarca,
+                    productModelo: productModelo,productClase:productClase, cant:cant, ingresarEn:ingresarEn},
             success: function (response) {
-                if (response === "exists") {
-                } else if (response === "success") {
-                    // Product added successfully, close modal and update inventory
-                    $("#nuevoModal").modal("hide");
-                    fetchProducts('all');
+                if (response === "success") {
+                    window.location.reload();
                 } else {
+                    alert(response);
                 }
-                alert(response);
             }
         });
-    } else {
-        alert("Ingresa un nombre de producto válido.");
-    }
+    } 
 });
 
-               function editarProducto(id) {
-      // Simulación de carga de datos del producto
-      var nombreProducto = "Producto " + id;
+function editarProducto(id,almacen,almtitulo,nomprod,maximo) {
+      // SimulaciÃ³n de carga de datos del producto
+      var nombreProducto = nomprod;
       var cantidadProducto = 1;
       // Llenar el formulario con los datos del producto
-      document.getElementById('enviarA').value = nombreProducto;
+      //console.log(id,almacen,nomprod);
+      document.getElementById('nombreProducto').innerText = nomprod;
+      document.getElementById('enviarDesde').innerText = almtitulo;
+      document.getElementById('enviarA').value = 2;
       document.getElementById('editCantidad').value = cantidadProducto;
-      // Mostrar el modal
+      document.getElementById('editCantidad').max = maximo;
+      //document.getElementById('enviarDesde').value=enviarDesde;
+      // Mostrar el modalenviarDesde
       $('#editModal').modal('show');
+}
+
+function MoverArticulo() {
+// esto es cuando le da aceptar en el dialogo de mover o transferir
+    var nombreProducto = document.getElementById('enviarA').value;
+    var cantidadProducto = document.getElementById('editCantidad').value;
+    // Cerrar el modal
+    $('#editModal').modal('hide');
+}
+
+function verifnuevo(){    
+    var txtCli=document.getElementById('txtCliente');
+    if (document.getElementById('selCliente').value=='-nuevo-'){
+        txtCli.disabled=false;
+        document.getElementById('txtCliente').focus();
+    } else {
+        txtCli.disabled=true;
     }
-
-    function guardarEdicion() {
-      // Aquí puedes obtener los valores del formulario y realizar las acciones necesarias
-      var nombreProducto = document.getElementById('enviarA').value;
-      var cantidadProducto = document.getElementById('editCantidad').value;
-
-      // Simplemente alertamos los valores para este ejemplo
-      //alert("Producto editado:\nNombre: " + nombreProducto + "\nCantidad: " + cantidadProducto);
-
-      // Aquí podrías enviar los datos del formulario a tu backend mediante una petición AJAX
-      // Y actualizar la tabla o realizar otras acciones según sea necesario
-
-      // Cerrar el modal
-      $('#editModal').modal('hide');
-    }
+}
 </script>

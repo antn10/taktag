@@ -13,19 +13,17 @@
           data-bs-toggle="dropdown" href="#" role="button" 
           aria-haspopup="true" aria-expanded="false">Inventario</a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="index.php?alm=all">Inventario general</a>
+            <a class="dropdown-item" href="inventario.php?alm=all">Inventario general</a>
             <?php
-                    include 'acc_buscar-inv.php';
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<a class='dropdown-item' href='index.php?alm=" 
-                            . $row['id'] . "'>". $row['nombre'] . "</a>";
-                        }
-                    }
+              $result=qry('SELECT id,nombre FROM almacenes WHERE favorito="S"');
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      echo "<a class='dropdown-item' href='inventario.php?alm=" 
+                      . $row['id'] . "'>". $row['nombre'] . "</a>";
+                  }
+              }
             ?>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Almacenes</a>
-            <a class="dropdown-item" href="#">Movimientos</a>
           </div>
         </li>
         <li class="nav-item dropdown">
@@ -33,8 +31,9 @@
           data-bs-toggle="dropdown" href="#" role="button" 
           aria-haspopup="true" aria-expanded="false">Consultar</a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Clientes</a>
-            <a class="dropdown-item" href="#">Calendario</a>
+            <a class="dropdown-item" href="almacenes.php">Almacenes</a>
+            <a class="dropdown-item" href="movimientos.php">Movimientos</a>
+            <a class="dropdown-item" href="clasificaciones.php">Clasificaciones</a>
           </div>
         </li>
       </ul>

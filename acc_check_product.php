@@ -1,23 +1,11 @@
 <?php
-// Connect to the database
-$servername = "192.168.0.20";
-$username = "taktag";
-$password = "taktag";
-$dbname = "taktag";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include "utils.php";
 
 // Check if the product name exists in the database
 $productName = $_POST['productName'];
 
-$sql = "SELECT * FROM products WHERE nombre = '$productName'";
-$result = $conn->query($sql);
+$sql = "SELECT * FROM articulos WHERE nombre = '$productName'";
+$result = qry($sql);
 
 if ($result->num_rows > 0) {
     // Product with the same name already exists
@@ -26,7 +14,4 @@ if ($result->num_rows > 0) {
     // Product doesn't exist
     echo "success";
 }
-
-// Close the database connection
-$conn->close();
 ?>

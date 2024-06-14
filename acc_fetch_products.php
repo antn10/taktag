@@ -1,45 +1,21 @@
-<?php
-error_reporting(E_ALL);  // Muestra todos los errores
+<?php error_reporting(E_ALL);  // Muestra todos los errores
 // Get the selected inventory ID
-if (isset($_GET['nombre'])) {
-    $inventoryId = $_GET['alm'];
-} else {
-    $inventoryId = 'all';
-}
+if (isset($_GET['alm'])) { $inventoryId = $_GET['alm'];} 
+else {$inventoryId = 'all';}
 // Construct the SQL query to fetch product details including product name by joining productos table
-$sql = "SELECT p.id, p.nombre AS product_name, 
-               SUM(cd.cantidad) AS total_quantity
+$sql = "SELECT p.id, p.nombre AS producto, SUM(cd.cantidad) AS cantidad
         FROM articulos p 
-        INNER JOIN cantidades_detallada cd ON p.id = cd.articulo";
-
-// If a specific inventory is selected, add a WHERE clause to filter products by inventory
-if ($inventoryId != 'all') {
-    $sql .= " WHERE cd.responsable = $inventoryId";
-}
-// Group by product ID and name to aggregate quantities
+        INNER JOIN elementos ele ON p.id = ele.art";
+if ($inventoryId != 'all') { $sql .= " WHERE cd.responsable = $inventoryId"; }
 $sql .= " GROUP BY p.id, p.nombre";
-$result = qry($sql);
-if ($result) {
-    // Generate HTML markup for table rows
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td>" . $row['id'] . "</td>";
-            echo "<td>" . $row['product_name'] . "</td>";
-            echo "<td>" . $row['total_quantity'] . "</td>";
-            echo "<td></td>"; // Assuming photo column
-            echo "<td>";
-            echo "<button class='btn btn-warning btn-sm' onclick='editarProducto(" . $row['id'] . ")'>transferir</button>";
-            echo "<button class='btn btn-info btn-sm'>editar</button>";
-            echo "</td>";
-            echo "</tr>";
-        }
-    } else {
-        echo "<tr><td colspan='5'>No products found for the selected inventory.</td></tr>";
-    }
-} else {
-    echo "<tr><td colspan='5'>Error executing query: " . $conn->error . "</td></tr>";
-}
+$htmlButton = "<button class='btn btn-info' style='font-size:10px' 
+                onclick=\"editarProducto(%id%,'$inventoryId','$tit','%producto%',%cantidad%)\">
+                Mover <i class='fas fa-sign-out-alt'></i></button>
+
+                <button class='btn btn-secondary' style='font-size:10px' 
+                onclick=\"comprarProducto(%id%,'$inventoryId','$tit','%producto%',%cantidad%)\">
+                Comprar <i class='fas fa-file-import'></i></button>";
+QryTabla($sql,['id','producto','cantidad'],$htmlButton,'');
 
 // Close the database connection
 $conn->close();
